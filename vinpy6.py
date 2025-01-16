@@ -2,7 +2,7 @@ import re
 
 def is_valid_vin(vin):
     """
-    Validate a VIN.
+    Validate a VIN with simplified checks (length and invalid characters).
     
     :param vin: str - The VIN to validate
     :return: bool - True if valid, False otherwise
@@ -19,6 +19,8 @@ def is_valid_vin(vin):
         print(f"  VIN contains invalid characters: {vin}")
         return False
 
+    # Placeholder: Would be the checksum check if desired later
+    # For now, we skip checksum validation
     return True
 
 def extract_vins(text):
@@ -66,4 +68,3 @@ if invalid_vins:
         print(f"  {vin}")
 else:
     print("  None")
-

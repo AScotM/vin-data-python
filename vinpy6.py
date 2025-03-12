@@ -1,70 +1,40 @@
 import re
 
 def is_valid_vin(vin):
-    """
-    Validate a VIN with simplified checks (length and invalid characters).
-    
-    :param vin: str - The VIN to validate
-    :return: bool - True if valid, False otherwise
-    """
-    print(f"Validating VIN: {vin}")  # Debugging
-
-    # Check the length
-    if len(vin) != 17:
-        print(f"  Invalid length for VIN: {vin}")
-        return False
-
-    # Ensure it does not contain invalid characters
-    if re.search(r"[IOQ]", vin):
-        print(f"  VIN contains invalid characters: {vin}")
-        return False
-
-    # Placeholder: Would be the checksum check if desired later
-    # For now, we skip checksum validation
-    return True
+    """Simple VIN validation: check length and forbidden characters."""
+    vin = vin.upper()
+    return len(vin) == 17 and not any(c in "IOQ" for c in vin)
 
 def extract_vins(text):
     """
-    Extract potential VINs from a given string.
-    
-    :param text: str - The text to search for VINs
-    :return: list - A list of potential VIN-like strings
+    Extracts any 17-character alphanumeric sequence (loose filtering).
+    We allow all characters in A-Z and 0-9 to ensure we catch potential invalid VINs too.
     """
-    # More permissive regex to capture any sequence of 17 or more characters
-    pattern = r"\b([A-Za-z0-9]{17,})\b"
-    matches = re.findall(pattern, text)
-    print(f"Extracted potential VINs: {matches}")  # Debugging
-    return matches
+    pattern = r'\b[\w\d]{17}\b'  # More relaxed, allows any 17-char alphanumeric string
+    return re.findall(pattern, text)
 
-# Example usage
+# Example input text (similar to PHP version)
 input_text = """
 Here are some sample VINs:
-1HGCM82633A123456, WDBBA48D7KA093694, and incorrect ones like ABC1234INVALID5678.
+1HGCM82633A123456, WDBBA48D7KA093694, and incorrect ones like ABC1234INVALID5678, 5YJSA1E26FF10130O (with an O).
 """
 
-# Extract potential VINs
+# Extract VINs from text
 vin_list = extract_vins(input_text)
 
-# Categorize VINs
-valid_vins = []
-invalid_vins = []
-for vin in vin_list:
-    if is_valid_vin(vin):
-        valid_vins.append(vin)
-    else:
-        invalid_vins.append(vin)
+# Validate each extracted VIN
+valid_vins = [vin for vin in vin_list if is_valid_vin(vin)]
+invalid_vins = [vin for vin in vin_list if not is_valid_vin(vin)]
 
-# Display results
-print("\nValid VINs:")
-if valid_vins:
-    for vin in valid_vins:
-        print(f"  {vin}")
-else:
-    print("  None")
+# Print results
+print("\n Valid VINs:")
+for vin in valid_vins:
+    print(f"  - {vin}")
+if not valid_vins:
+    print("  (None found)")
 
-print("\nInvalid VINs:")
-if invalid_vins:
-    for vin in invalid_vins:
-        print(f"  {vin}")
-else:
-    print("  None")
+print("\n Invalid VINs:")
+for vin in invalid_vins:
+    print(f"  - {vin}")
+if not invalid_vins:
+    print("  (None found)")
